@@ -6,7 +6,7 @@
 /*   By: maburnet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 19:59:20 by maburnet          #+#    #+#             */
-/*   Updated: 2023/10/20 20:01:50 by maburnet         ###   ########.fr       */
+/*   Updated: 2023/10/24 21:05:45 by maburnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,9 +82,9 @@ char	*ft_findcmdpath(char *cmd, char **envp)
 	return (ft_freetab(paths), ft_freetab(command), NULL);
 }
 
-int	ft_do_last(int outfile)
+int	ft_closepipe(int *pipefd)
 {
-	if (dup2(outfile, 1) == -1)
-		exit(0);
+	close(pipefd[0]);
+	close(pipefd[1]);
 	return (0);
 }

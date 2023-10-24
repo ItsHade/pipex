@@ -6,7 +6,7 @@
 /*   By: maburnet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 19:18:41 by maburnet          #+#    #+#             */
-/*   Updated: 2023/10/20 20:04:06 by maburnet         ###   ########.fr       */
+/*   Updated: 2023/10/25 00:02:28 by maburnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,122 +16,136 @@
 // pipefd[0] read
 // pipefd[1] write
 
-void	ft_exec(char *cmd, char **envp)
+void	ft_exec(t_fd *fd, char *cmd, char **envp)
 {
 	char	**command;
 	char	*path;
 
-	if (!cmd || !envp)
-		exit(0);
 	command = ft_split(cmd, ' ');
 	if (!command)
-		exit (0);
+		return (ft_close(fd), exit(0));
 	path = ft_findcmdpath(command[0], envp);
 	if (!path)
-		exit(0);
+	{
+		waitpid(0, NULL, 0);
+		return (ft_freetab(command), ft_close(fd), exit(0));
+	}
+	ft_close(fd);
 	if (execve(path, command, envp) == -1)
 	{
 		ft_putstr_fd("pipex: command not found: ", 2);
 		ft_putstr_fd(command[0], 2);
 		ft_putstr_fd("\n", 2);
 		ft_freetab(command);
+		free(path);
 		exit(0);
 	}
 }
 
-void	ft_do_pipe(char *cmd, char **envp)
+void	ft_do_pipe(t_fd *fd, char *cmd, char **envp)
 {
 	pid_t	pid;
-	int		pipefd[2];
 
-	if (pipe(pipefd) == -1)
-		exit(0);
+	if (pipe(fd->pipefd) == -1)
+		return (ft_close(fd), exit(0));
 	pid = fork();
 	if (pid == -1)
-		exit(0);
+		return (ft_close(fd), exit(0));
 	if (pid == 0)
 	{
-		if (dup2(pipefd[1], 1) == -1)
-			exit(0);
-		close(pipefd[0]);
-		ft_exec(cmd, envp);
+		if (dup2(fd->pipefd[1], 1) == -1)
+			return (ft_close(fd), exit(0));
+		ft_close(fd);
+		ft_exec(fd, cmd, envp);
 	}
 	else
 	{
-		if (dup2(pipefd[0], 0) == -1)
-			exit(0);
-		close(pipefd[1]);
+		if (dup2(fd->pipefd[0], 0) == -1)
+			return (ft_close(fd), exit(0));
+		wait(NULL);
+		ft_close(fd);
 	}
 }
 
-void	ft_here_doc2(char **argv, int *pipefd)
+void	ft_here_doc2(t_fd *fd, char **argv)
 {
 	char	*ptr;
 
 	ptr = NULL;
-	close(pipefd[0]);
+	close(fd->pipefd[0]);
+	close(fd->outfile);
 	while (1)
 	{
 		ptr = get_next_line(0);
 		if (ft_strncmp(ptr, argv[2], ft_strlen(argv[2])) == 0
 			&& ft_strlen(argv[2]) == ft_strlen(ptr) - 1)
 		{
-			free(ptr);
-			exit(0);
+			return (free(ptr), close(fd->pipefd[1]), exit(0));
 		}
-		ft_putstr_fd(ptr, pipefd[1]);
+		ft_putstr_fd(ptr, fd->pipefd[1]);
 		free(ptr);
 	}
+	close(fd->pipefd[1]);
 }
 
-void	ft_here_doc(char **argv)
+void	ft_here_doc(t_fd *fd, char **argv)
 {
-	int		pipefd[2];
 	pid_t	pid;
 
-	if (pipe(pipefd) == -1)
-		exit(0);
+	fd->isheredoc = 1;
+	if (pipe(fd->pipefd) == -1)
+		return (close(fd->outfile), exit(0));
 	pid = fork();
 	if (pid == -1)
-		exit(0);
+		return (ft_close(fd), exit(0));
 	if (!pid)
 	{
-		ft_here_doc2(argv, pipefd);
+		ft_here_doc2(fd, argv);
 	}
 	else
 	{
-		if (dup2(pipefd[0], 0) == -1)
-			exit(0);
-		close(pipefd[1]);
+		if (dup2(fd->pipefd[0], 0) == -1)
+			return (ft_close(fd), exit(0));
 		wait(NULL);
+		close(fd->pipefd[1]);
+		close(fd->pipefd[0]); //
 	}
 }
 
 int	main(int argc, char **argv, char **envp)
 {
 	int		i;
-	int		infile;
-	int		outfile;
+	t_fd	fd;
 
-	if (argc < 5)
+	fd.isheredoc = 0;
+	if (argc < 5 || ft_checkargs(argc, argv, envp) == -1)
 		return (0);
 	if (ft_strncmp(argv[1], "here_doc", 8) == 0 && ft_strlen(argv[1]) == 8)
 	{
 		if (argc < 6)
-			exit(0);
+			return (-1);
 		i = 3;
-		outfile = ft_open_file(argv[argc - 1], 2);
-		ft_here_doc(argv);
+		if (ft_open_file(&fd, argv[argc - 1], 2) < 0)
+			return (-1);
+		ft_here_doc(&fd, argv);
 	}
 	else
 	{
 		i = 2;
-		infile = ft_open_file(argv[1], 0);
-		outfile = ft_open_file(argv[argc - 1], 1);
-		if (dup2(infile, 0) == -1)
-			exit(0);
+		if (ft_open_file(&fd, argv[1], 0) < 0)
+			return (-1);
+		if (ft_open_file(&fd, argv[argc - 1], 1) < 0)
+			return (close(fd.infile), -1);
+		if (dup2(fd.infile, 0) == -1)
+			return (close(fd.infile), close(fd.outfile), -1);
+		close(fd.infile);
 	}
 	while (i < argc - 2)
-		ft_do_pipe(argv[i++], envp);
-	return (ft_do_last(outfile), ft_exec(argv[argc - 2], envp), 0);
+	{
+		ft_do_pipe(&fd, argv[i++], envp);
+	}
+	if (dup2(fd.outfile, 1) == -1)
+		return (close(fd.outfile), -1);
+	close(fd.outfile);
+	return (ft_exec(&fd, argv[argc - 2], envp), 0);
 }

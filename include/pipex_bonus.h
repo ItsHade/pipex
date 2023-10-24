@@ -6,7 +6,7 @@
 /*   By: maburnet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/13 12:39:15 by maburnet          #+#    #+#             */
-/*   Updated: 2023/10/23 23:58:18 by maburnet         ###   ########.fr       */
+/*   Updated: 2023/10/24 23:34:33 by maburnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,14 @@
 # include <sys/wait.h>
 # include <sys/types.h>
 # include <string.h>
+
+typedef struct s_fd
+{
+	int	infile;
+	int	outfile;
+	int	pipefd[2];
+	int isheredoc;
+} t_fd;
 
 /*  UTILS*/
 
@@ -41,7 +49,15 @@ char	**ft_getpaths(char **envp);
 
 char	*ft_findcmdpath(char *cmd, char **envp);
 
-int		ft_open_file(char *file, int b);
+int		ft_open_file(t_fd *fd, char *file, int b);
+
+int		ft_closepipe(int *pipefd);
+
+int		ft_checkargs(int argc, char **argv, char **envp);
+
+int		ft_close(t_fd *fd);
+
+// void	ft_exit(int e);
 
 /* PUT FUNCTIONS */
 

@@ -6,91 +6,86 @@
 /*   By: maburnet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 23:46:27 by maburnet          #+#    #+#             */
-/*   Updated: 2023/10/23 23:46:30 by maburnet         ###   ########.fr       */
+/*   Updated: 2023/10/24 23:16:49 by maburnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/get_next_line.h"
 
-char	*ft_get_line(char *stash)
+char	*ft_strjoin_gnl(char *s1, char *s2)
 {
-	int		i;
-	char	*line;
-
-	if (!stash || !stash[0])
-		return (NULL);
-	i = 0;
-	while (stash[i] && stash[i] != '\n')
-		i++;
-	if (stash[i] == '\n')
-		i++;
-	line = (char *)malloc((1 + i) * sizeof(char));
-	if (!line)
-		return (NULL);
-	i = 0;
-	while (stash[i] && stash[i] != '\n')
-	{
-		line[i] = stash[i];
-		i++;
-	}
-	if (stash[i] == '\n')
-		line[i++] = '\n';
-	line[i] = '\0';
-	return (line);
-}
-
-char	*ft_new_stash(char *stash)
-{
-	char	*str;
 	int		i;
 	int		a;
+	char	*str;
 
+	a = 0;
 	i = 0;
-	while (stash[i] && stash[i] != '\n')
-		i++;
-	if (stash[i] == '\0')
-	{
-		free(stash);
+	if (!s1)
+		s1 = ft_getnonnull(s1);
+	if (!s1 || !s2)
 		return (NULL);
-	}
-	i += (stash[i] == '\n');
-	str = (char *)malloc(1 + ft_strlen(stash) - i);
+	str = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 2));
 	if (!str)
 		return (NULL);
-	a = 0;
-	while (stash[i + a])
+	while (s1[i] != '\0')
 	{
-		str[a] = stash[i + a];
+		str[i] = s1[i];
+		i++;
+	}
+	while (s2[a] != '\0')
+	{
+		str[i + a] = s2[a];
 		a++;
 	}
-	str[a] = '\0';
-	free(stash);
+	str[i + a] = '\0';
+	free(s1);
 	return (str);
+}
+
+char	*ft_strchr(char *s, int c)
+{
+	size_t	i;
+
+	if (!s)
+		return (NULL);
+	if (c == 0)
+	{
+		i = ft_strlen((char *)s);
+		return (&s[i]);
+	}
+	i = 0;
+	while (s[i])
+	{
+		if (s[i] == (char)c)
+			return (&s[i]);
+		i++;
+	}
+	return (NULL);
 }
 
 char	*get_next_line(int fd)
 {
 	char		*buffer;
 	int			nb_bytes;
-	static char	*stash;
+	char		*stash;
+	int			buffer_size;
 
+	buffer_size = 1;
+	stash = NULL;
 	ft_putstr_fd("heredoc> ", 1);
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0)
 		return (NULL);
 	nb_bytes = 1;
-	buffer = (char *)malloc((1 + BUFFER_SIZE) * sizeof(char));
+	buffer = ft_calloc(sizeof(char), (buffer_size + 1));
 	if (!buffer)
 		return (NULL);
 	while (!(ft_strchr(stash, '\n')) && nb_bytes != 0)
 	{
-		nb_bytes = read(fd, buffer, BUFFER_SIZE);
+		nb_bytes = read(fd, buffer, buffer_size);
 		if (nb_bytes == -1)
 			return (free(buffer), NULL);
-		buffer[nb_bytes] = '\0';
-		stash = ft_strjoin(stash, buffer);
+		stash = ft_strjoin_gnl(stash, buffer);
 	}
 	free(buffer);
-	buffer = ft_get_line(stash);
-	stash = ft_new_stash(stash);
-	return (buffer);
+	return (stash);
 }

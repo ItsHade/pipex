@@ -6,7 +6,7 @@
 /*   By: maburnet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 19:18:44 by maburnet          #+#    #+#             */
-/*   Updated: 2023/10/23 23:58:09 by maburnet         ###   ########.fr       */
+/*   Updated: 2023/10/24 21:45:46 by maburnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ char	**ft_getpaths(char **envp);
 
 char	*ft_findcmdpath(char *cmd, char **envp);
 
-int		ft_do_last(int outfile);
+int		ft_closepipe(int *pipefd);
 
 /* PUT FUNCTIONS */
 

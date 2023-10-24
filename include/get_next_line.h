@@ -6,7 +6,7 @@
 /*   By: maburnet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/22 15:33:12 by maburnet          #+#    #+#             */
-/*   Updated: 2023/10/22 15:33:13 by maburnet         ###   ########.fr       */
+/*   Updated: 2023/10/24 23:18:00 by maburnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,14 +18,9 @@
 # include <stddef.h>
 # include <fcntl.h>
 
-# define BUFFER_SIZE 50
-# define OPEN_MAX 1024
-
 char	*get_next_line(int fd);
 
 char	*ft_strjoin(char *s1, char *s2);
-
-char	*ft_strchr(char *string, int searchedChar);
 
 void	ft_bzero(void *s, size_t n);
 
@@ -34,6 +29,8 @@ void	*ft_calloc(size_t elementCount, size_t elementSize);
 int		ft_strlen(char *s);
 
 void	ft_putstr_fd(char *s, int fd);
+
+char	*ft_getnonnull(char *s1);
 
 /* PUT FUNCTIONS */
 
