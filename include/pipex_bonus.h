@@ -6,7 +6,7 @@
 /*   By: maburnet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/13 12:39:15 by maburnet          #+#    #+#             */
-/*   Updated: 2023/10/24 23:34:33 by maburnet         ###   ########.fr       */
+/*   Updated: 2023/10/25 00:59:04 by maburnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,8 @@ typedef struct s_fd
 	int	infile;
 	int	outfile;
 	int	pipefd[2];
-	int isheredoc;
-} t_fd;
+	int	isheredoc;
+}	t_fd;
 
 /*  UTILS*/
 
