@@ -6,7 +6,7 @@
 /*   By: maburnet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 19:18:41 by maburnet          #+#    #+#             */
-/*   Updated: 2023/10/25 14:23:48 by maburnet         ###   ########.fr       */
+/*   Updated: 2023/10/26 18:04:34 by maburnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,21 +20,20 @@
 // STDOUT_FILENO	1	/* Standard output.  */
 // STDERR_FILENO	2	/* Standard error output.  */
 
-void	ft_exec(t_fd *fd, char *cmd, char **envp)
+void	ft_exec(char *cmd, char **envp)
 {
 	char	**command;
 	char	*path;
 
 	command = ft_split(cmd, ' ');
 	if (!command)
-		return (ft_close(fd), exit(0));
+		return (exit(0));
 	path = ft_findcmdpath(command[0], envp);
 	if (!path)
 	{
 		waitpid(0, NULL, 0);
-		return (ft_freetab(command), ft_close(fd), exit(0));
+		return (ft_freetab(command), exit(0));
 	}
-	// ft_close(fd);
 	if (execve(path, command, envp) == -1)
 	{
 		ft_putstr_fd("pipex: command not found: ", 2);
@@ -60,8 +59,7 @@ void	ft_do_pipe(t_fd *fd, char *cmd, char **envp)
 		if (dup2(fd->pipefd[1], STDOUT_FILENO) == -1)
 			return (ft_close(fd), exit(0));
 		ft_close(fd);
-		// close(fd->pipefd[0]);
-		ft_exec(fd, cmd, envp);
+		ft_exec(cmd, envp);
 	}
 	else
 	{
@@ -69,7 +67,8 @@ void	ft_do_pipe(t_fd *fd, char *cmd, char **envp)
 			return (ft_close(fd), exit(0));
 		wait(NULL);
 		close(fd->pipefd[1]);
-		close(fd->infile);
+		if (fd->isheredoc == 0)
+			close(fd->infile);
 		close(fd->pipefd[0]);
 	}
 }
@@ -78,7 +77,7 @@ void	ft_here_doc2(t_fd *fd, char **argv)
 {
 	char	*ptr;
 
-	ptr = NULL;
+ 	ptr = NULL;
 	close(fd->pipefd[0]);
 	close(fd->outfile);
 	while (1)
@@ -119,9 +118,21 @@ void	ft_here_doc(t_fd *fd, char **argv)
 	}
 }
 
+int	ft_not_here_doc(t_fd *fd, char **argv, int argc)
+{
+	fd->i = 2;
+	if (ft_open_file(fd, argv[1], 0) < 0)
+		exit(0);
+	if (ft_open_file(fd, argv[argc - 1], 1) < 0)
+		return (close(fd->infile), exit(0), -1);
+	if (dup2(fd->infile, STDIN_FILENO) == -1)
+		return (close(fd->infile), close(fd->outfile), exit(0), -1);
+	close(fd->infile);
+	return (0);
+}
+
 int	main(int argc, char **argv, char **envp)
 {
-	int		i;
 	t_fd	fd;
 
 	fd.isheredoc = 0;
@@ -131,29 +142,18 @@ int	main(int argc, char **argv, char **envp)
 	{
 		if (argc < 6)
 			return (-1);
-		i = 3;
+		fd.i = 3;
 		if (ft_open_file(&fd, argv[argc - 1], 2) < 0)
 			return (-1);
 		ft_here_doc(&fd, argv);
 	}
 	else
+		ft_not_here_doc(&fd, argv, argc);
+	while (fd.i < argc - 2)
 	{
-		i = 2;
-		if (ft_open_file(&fd, argv[1], 0) < 0)
-			return (-1);
-		if (ft_open_file(&fd, argv[argc - 1], 1) < 0)
-			return (close(fd.infile), -1);
-		if (dup2(fd.infile, STDIN_FILENO) == -1)
-			return (close(fd.infile), close(fd.outfile), -1);
-		close(fd.infile);
-	}
-	while (i < argc - 2)
-	{
-		ft_do_pipe(&fd, argv[i++], envp);
+		ft_do_pipe(&fd, argv[fd.i++], envp);
 	}
 	if (dup2(fd.outfile, STDOUT_FILENO) == -1)
 		return (close(fd.outfile), -1);
-	// close(fd.outfile);
-	ft_close(&fd);
-	return (ft_exec(&fd, argv[argc - 2], envp), wait(NULL), 0);
+	return (ft_close(&fd), ft_exec(argv[argc - 2], envp), wait(NULL), 0);
 }

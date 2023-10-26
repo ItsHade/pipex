@@ -6,7 +6,7 @@
 /*   By: maburnet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 23:46:27 by maburnet          #+#    #+#             */
-/*   Updated: 2023/10/24 23:16:49 by maburnet         ###   ########.fr       */
+/*   Updated: 2023/10/26 17:27:20 by maburnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ char	*ft_strjoin_gnl(char *s1, char *s2)
 	char	*str;
 
 	a = 0;
-	i = 0;
+	i = -1;
 	if (!s1)
 		s1 = ft_getnonnull(s1);
 	if (!s1 || !s2)
@@ -27,11 +27,8 @@ char	*ft_strjoin_gnl(char *s1, char *s2)
 	str = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 2));
 	if (!str)
 		return (NULL);
-	while (s1[i] != '\0')
-	{
+	while (s1[++i] != '\0')
 		str[i] = s1[i];
-		i++;
-	}
 	while (s2[a] != '\0')
 	{
 		str[i + a] = s2[a];
