@@ -6,7 +6,7 @@
 /*   By: maburnet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/13 12:39:15 by maburnet          #+#    #+#             */
-/*   Updated: 2023/10/26 17:39:52 by maburnet         ###   ########.fr       */
+/*   Updated: 2023/10/26 21:56:11 by maburnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,8 @@ int		ft_strncmp(const char *s1, const char *s2, size_t n);
 void	ft_freetab(char **tab);
 
 char	*ft_strjoin(char *s1, char *s2);
+
+int		ft_not_here_doc(t_fd *fd, char **argv, int argc);
 
 /* PIPEX UTILS */
 

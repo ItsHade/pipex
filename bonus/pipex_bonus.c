@@ -6,7 +6,7 @@
 /*   By: maburnet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 19:18:41 by maburnet          #+#    #+#             */
-/*   Updated: 2023/10/26 18:08:23 by maburnet         ###   ########.fr       */
+/*   Updated: 2023/10/26 21:51:39 by maburnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 
 // pipefd[0] read
 // pipefd[1] write
+
+// bash --posix
 
 // STDIN_FILENO		0	/* Standard input.  */
 // STDOUT_FILENO	1	/* Standard output.  */

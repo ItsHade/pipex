@@ -6,7 +6,7 @@
 /*   By: maburnet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/22 15:37:12 by maburnet          #+#    #+#             */
-/*   Updated: 2023/10/24 23:08:36 by maburnet         ###   ########.fr       */
+/*   Updated: 2023/10/26 21:52:35 by maburnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,8 @@ void	ft_freetab(char **tab)
 char	*ft_getnonnull(char *s1)
 {
 	s1 = malloc(sizeof(char) * 1);
+	if (!s1)
+		return (NULL);
 	s1[0] = '\0';
 	return (s1);
 }
