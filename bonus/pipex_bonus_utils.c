@@ -6,7 +6,7 @@
 /*   By: maburnet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/22 15:33:43 by maburnet          #+#    #+#             */
-/*   Updated: 2023/10/26 17:54:37 by maburnet         ###   ########.fr       */
+/*   Updated: 2023/10/26 18:08:32 by maburnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,5 +75,18 @@ int	ft_close(t_fd *fd)
 		close(fd->pipefd[0]);
 	if (fd->pipefd[1] > 0)
 		close(fd->pipefd[1]);
+	return (0);
+}
+
+int	ft_not_here_doc(t_fd *fd, char **argv, int argc)
+{
+	fd->i = 2;
+	if (ft_open_file(fd, argv[1], 0) < 0)
+		exit(0);
+	if (ft_open_file(fd, argv[argc - 1], 1) < 0)
+		return (close(fd->infile), exit(0), -1);
+	if (dup2(fd->infile, STDIN_FILENO) == -1)
+		return (close(fd->infile), close(fd->outfile), exit(0), -1);
+	close(fd->infile);
 	return (0);
 }

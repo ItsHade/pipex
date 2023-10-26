@@ -6,7 +6,7 @@
 /*   By: maburnet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 19:18:41 by maburnet          #+#    #+#             */
-/*   Updated: 2023/10/26 18:04:34 by maburnet         ###   ########.fr       */
+/*   Updated: 2023/10/26 18:08:23 by maburnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ void	ft_here_doc2(t_fd *fd, char **argv)
 {
 	char	*ptr;
 
- 	ptr = NULL;
+	ptr = NULL;
 	close(fd->pipefd[0]);
 	close(fd->outfile);
 	while (1)
@@ -116,19 +116,6 @@ void	ft_here_doc(t_fd *fd, char **argv)
 		close(fd->pipefd[1]);
 		close(fd->pipefd[0]);
 	}
-}
-
-int	ft_not_here_doc(t_fd *fd, char **argv, int argc)
-{
-	fd->i = 2;
-	if (ft_open_file(fd, argv[1], 0) < 0)
-		exit(0);
-	if (ft_open_file(fd, argv[argc - 1], 1) < 0)
-		return (close(fd->infile), exit(0), -1);
-	if (dup2(fd->infile, STDIN_FILENO) == -1)
-		return (close(fd->infile), close(fd->outfile), exit(0), -1);
-	close(fd->infile);
-	return (0);
 }
 
 int	main(int argc, char **argv, char **envp)
