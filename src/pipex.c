@@ -6,7 +6,7 @@
 /*   By: maburnet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/22 15:33:22 by maburnet          #+#    #+#             */
-/*   Updated: 2023/10/24 21:11:56 by maburnet         ###   ########.fr       */
+/*   Updated: 2023/10/29 11:22:44 by maburnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,13 +22,15 @@ void	ft_exec(char *cmd, char **envp)
 
 	command = ft_split(cmd, ' ');
 	if (!command)
-		exit(0);
-	path = ft_findcmdpath(command[0], envp);
+		exit(-1);
+	if (ft_is_absolute(command[0]) == 0)
+		return (ft_exec_abs(command, envp));
+	path = ft_findcmdpath(command[0], envp, NULL, NULL);
 	if (!path)
 	{
 		ft_freetab(command);
 		waitpid(0, NULL, 0);
-		exit(0);
+		exit(-1);
 	}
 	if (execve(path, command, envp) == -1)
 	{
@@ -37,7 +39,7 @@ void	ft_exec(char *cmd, char **envp)
 		ft_putstr_fd("\n", 2);
 		ft_freetab(command);
 		free(path);
-		exit(0);
+		exit(-1);
 	}
 }
 
@@ -97,21 +99,16 @@ void	ft_parent_process(char **argv, char **envp, int *pipefd)
 	ft_exec(argv[3], envp);
 }
 
-int	ft_checkarg(char **argv, char **envp)
+int	ft_checkarg(char **argv)
 {
-	if (!envp || !envp[0])
-	{
-		ft_putstr("No environment variables found\n");
-		return (-1);
-	}
 	if (!argv[1] || !argv[1][0] || !argv[4] || !argv[4][0])
 	{
-		ft_putstr("No such file or directory\n");
+		ft_putstr(" : No such file of directory\n");
 		return (-1);
 	}
 	if (!argv[2] || !argv[2][0] || !argv[3] || !argv[3][0])
 	{
-		ft_putstr("One of the arguments is empty or NULL\n");
+		ft_putstr(" : No such file of directory\n");
 		return (-1);
 	}
 	return (0);
@@ -127,7 +124,7 @@ int	main(int argc, char **argv, char **envp)
 		ft_putstr("./pipex [infile] [cmd1] [cmd2] [outfile]\n");
 		return (0);
 	}
-	if (ft_checkarg(argv, envp) == -1)
+	if (ft_checkarg(argv) == -1)
 		return (0);
 	if (pipe(pipefd) == -1)
 		return (0);

@@ -6,7 +6,7 @@
 /*   By: maburnet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 19:18:41 by maburnet          #+#    #+#             */
-/*   Updated: 2023/10/26 21:51:39 by maburnet         ###   ########.fr       */
+/*   Updated: 2023/10/29 11:24:04 by maburnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,9 @@ void	ft_exec(char *cmd, char **envp)
 	command = ft_split(cmd, ' ');
 	if (!command)
 		return (exit(0));
-	path = ft_findcmdpath(command[0], envp);
+	if (ft_is_absolute(command[0]) == 0)
+		return (ft_exec_abs(command, envp));
+	path = ft_findcmdpath(command[0], envp, NULL, NULL);
 	if (!path)
 	{
 		waitpid(0, NULL, 0);
@@ -125,7 +127,7 @@ int	main(int argc, char **argv, char **envp)
 	t_fd	fd;
 
 	fd.isheredoc = 0;
-	if (argc < 5 || ft_checkargs(argc, argv, envp) == -1)
+	if (argc < 5 || ft_checkargs(argc, argv) == -1)
 		return (0);
 	if (ft_strncmp(argv[1], "here_doc", 8) == 0 && ft_strlen(argv[1]) == 8)
 	{

@@ -6,19 +6,12 @@
 /*   By: maburnet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/22 15:33:43 by maburnet          #+#    #+#             */
-/*   Updated: 2023/10/26 18:08:32 by maburnet         ###   ########.fr       */
+/*   Updated: 2023/10/29 11:21:21 by maburnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../include/get_next_line.h"
 #include "../include/pipex_bonus.h"
-
-void	ft_file_not_found(char *file)
-{
-	ft_putstr("No such file or directory!: ");
-	ft_putstr(file);
-	ft_putchar('\n');
-}
 
 int	ft_open_file(t_fd *fd, char *file, int b)
 {
@@ -40,21 +33,16 @@ int	ft_open_file(t_fd *fd, char *file, int b)
 	return (0);
 }
 
-int	ft_checkargs(int argc, char **argv, char **envp)
+int	ft_checkargs(int argc, char **argv)
 {
 	int	i;
 
 	i = 0;
-	if (!envp || !envp[0])
-	{
-		ft_putstr("No environment variables found\n");
-		return (-1);
-	}
 	while (i < argc)
 	{
 		if (!argv[i] || !argv[i][0])
 		{
-			ft_putstr("One of the arguments is empty or NULL\n");
+			ft_putstr(" : No such file of directory\n");
 			return (-1);
 		}
 		i++;
@@ -82,7 +70,7 @@ int	ft_not_here_doc(t_fd *fd, char **argv, int argc)
 {
 	fd->i = 2;
 	if (ft_open_file(fd, argv[1], 0) < 0)
-		exit(0);
+		return (ft_file_not_found(argv[1]), exit(-1), -1);
 	if (ft_open_file(fd, argv[argc - 1], 1) < 0)
 		return (close(fd->infile), exit(0), -1);
 	if (dup2(fd->infile, STDIN_FILENO) == -1)

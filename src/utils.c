@@ -6,7 +6,7 @@
 /*   By: maburnet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/22 15:37:12 by maburnet          #+#    #+#             */
-/*   Updated: 2023/10/26 21:52:35 by maburnet         ###   ########.fr       */
+/*   Updated: 2023/10/28 18:21:30 by maburnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ void	ft_freetab(char **tab)
 	free(tab);
 }
 
-//ghetto func
 char	*ft_getnonnull(char *s1)
 {
 	s1 = malloc(sizeof(char) * 1);

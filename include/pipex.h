@@ -6,7 +6,7 @@
 /*   By: maburnet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/16 19:18:44 by maburnet          #+#    #+#             */
-/*   Updated: 2023/10/24 21:45:46 by maburnet         ###   ########.fr       */
+/*   Updated: 2023/10/29 11:23:02 by maburnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,15 +33,21 @@ void	ft_freetab(char **tab);
 
 char	*ft_strjoin(char *s1, char *s2);
 
+void	ft_file_not_found(char *file);
+
 /* PIPEX UTILS */
 
 char	**ft_removepathprefix(char **paths);
 
 char	**ft_getpaths(char **envp);
 
-char	*ft_findcmdpath(char *cmd, char **envp);
+char	*ft_findcmdpath(char *cmd, char **envp, char *tmp, char *cmd_path);
 
 int		ft_closepipe(int *pipefd);
+
+void	ft_exec_abs(char **command, char **envp);
+
+int		ft_is_absolute(char *cmd);
 
 /* PUT FUNCTIONS */
 

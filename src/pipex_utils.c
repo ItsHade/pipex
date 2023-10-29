@@ -6,7 +6,7 @@
 /*   By: maburnet <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/20 19:59:20 by maburnet          #+#    #+#             */
-/*   Updated: 2023/10/24 21:05:45 by maburnet         ###   ########.fr       */
+/*   Updated: 2023/10/29 11:24:31 by maburnet         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ char	**ft_getpaths(char **envp)
 	int		i;
 	char	**paths;
 
+	paths = NULL;
 	i = 0;
 	while (envp[i] != NULL)
 	{
@@ -53,30 +54,31 @@ char	**ft_getpaths(char **envp)
 	return (paths);
 }
 
-char	*ft_findcmdpath(char *cmd, char **envp)
+//donner 2 des variables definies en parametres mais vides
+char	*ft_findcmdpath(char *cmd, char **envp, char *tmp, char *cmd_path)
 {
 	int		i;
 	char	**paths;
 	char	**command;
-	char	*tmp;
-	char	*cmd_path;
 
 	i = -1;
 	paths = ft_getpaths(envp);
+	if (!paths)
+		return (ft_file_not_found(cmd), NULL);
 	command = ft_split(cmd, ' ');
-	if (paths == NULL || command == NULL)
-		return (NULL);
+	if (command == NULL)
+		return (ft_freetab(paths), NULL);
 	while (paths[++i])
 	{
 		tmp = ft_strjoin(paths[i], "/");
 		if (!tmp)
-			return (NULL);
+			return (ft_freetab(paths), ft_freetab(command), NULL);
 		cmd_path = ft_strjoin(tmp, cmd);
 		if (!cmd_path)
-			return (free(tmp), NULL);
+			return (ft_freetab(paths), ft_freetab(command), free(tmp), NULL);
 		free(tmp);
 		if (access(cmd_path, F_OK | X_OK) == 0)
-			return (ft_freetab(command), cmd_path);
+			return (ft_freetab(paths), ft_freetab(command), cmd_path);
 		free(cmd_path);
 	}
 	return (ft_freetab(paths), ft_freetab(command), NULL);
@@ -87,4 +89,16 @@ int	ft_closepipe(int *pipefd)
 	close(pipefd[0]);
 	close(pipefd[1]);
 	return (0);
+}
+
+void	ft_exec_abs(char **command, char **envp)
+{
+	if (execve(command[0], command, envp) == -1)
+	{
+		ft_putstr_fd("pipex: command not found: ", 2);
+		ft_putstr_fd(command[0], 2);
+		ft_putstr_fd("\n", 2);
+		ft_freetab(command);
+		exit(-1);
+	}
 }
